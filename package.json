@@ -1,0 +1,11 @@
+{
+  "name": "koa_portfolio",
+  "version": "0.0.1",
+  "description": "koa app",
+  "main": "index.js",
+  "author": "petersmolenko",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.12.0"
+  }
+}
