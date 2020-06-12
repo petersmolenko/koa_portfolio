@@ -1,7 +1,7 @@
 extends ../_template-admin
 
 block variables
-  - var title = 'Admin page'
+  - var title = 'Администрирование'
 
 block content
   .wrapper
@@ -37,7 +37,7 @@ block content
             .form-upload__input-line
               .form-upload__wraper
                 label.form-upload__label
-                  input(name="photo" type="file" required accept="image/*").form-upload__input-file
+                  input(name="photo" type="file" accept="image/*").form-upload__input-file
                   span.form-upload__input-file-title Загрузить фото
             .form-upload__input-line
               input(name="name" type="text" placeholder="Название").form-upload__input
