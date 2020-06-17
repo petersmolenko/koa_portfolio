@@ -11,7 +11,7 @@ module.exports.index = async (ctx, next) => {
     const products = db.getState().products || [];
     const skills = db.getState().skills || [];
     return await ctx.render("./pages/index", {
-        msgemail: ctx.flash.msgemail,
+        msgemail: ctx.flash.get(),
         products,
         skills,
     });
@@ -21,12 +21,12 @@ module.exports.contact = async (ctx, next) => {
     if (!db.has("contacts").value()) db.set("contacts", []).write();
     db.get("contacts").push(ctx.request.body).write();
 
-    ctx.flash.msgemail = "Контакты отправлены!";
+    ctx.flash.set("Контакты отправлены!");
     return await ctx.redirect("/index");
 };
 
 module.exports.login = async (ctx, next) => {
-    return await ctx.render("./pages/login", { msglogin: ctx.flash.msglogin });
+    return await ctx.render("./pages/login", { msglogin: ctx.flash.get() });
 };
 
 module.exports.auth = async (ctx, next) => {
@@ -35,18 +35,21 @@ module.exports.auth = async (ctx, next) => {
 
     if (user.email === email && psw.validPassword(password)) {
         ctx.session.isAuthorized = true;
-        ctx.flash.msglogin = "Авторизация выполнена успешно!";
+        ctx.flash.set("Авторизация выполнена успешно!");
     } else {
-        ctx.flash.msglogin = "Ошибка! Не верный логин или пароль.";
+        ctx.flash.set("Ошибка! Не верный логин или пароль.");
     }
     return await ctx.redirect("/login");
 };
 
 module.exports.admin = async (ctx, next) => {
+    const msg =(!ctx.flash.get())
+        ? { msgskill: null, msgfile: null }
+        : ctx.flash.get();
     if (ctx.session.isAuthorized) {
         return await ctx.render("./pages/admin", {
-            msgskill: ctx.flash.msgskill,
-            msgfile: ctx.flash.msgfile,
+            msgskill: msg.msgskill,
+            msgfile: msg.msgfile,
         });
     } else {
         return await ctx.redirect("/login");
@@ -58,7 +61,7 @@ module.exports.skills = async (ctx, next) => {
     const error = validation.validSkillsForm(age, concerts, cities, years);
 
     if (error) {
-        ctx.flash.msgskill = `Ошибка! ${error}`;
+        ctx.flash.set({ msgskill: `Ошибка! ${error}`, msgfile: null });
     } else {
         db.set("skills", [
             {
@@ -78,7 +81,7 @@ module.exports.skills = async (ctx, next) => {
                 text: "Лет на сцене в качестве гитариста",
             },
         ]).write();
-        ctx.flash.msgskill = "Данные обновлены!";
+        ctx.flash.set({ msgskill: "Данные обновлены!", msgfile: null });
     }
     return await ctx.redirect("/admin");
 };
@@ -104,9 +107,9 @@ module.exports.products = async (ctx, next) => {
                 src: path.join("upload", name),
             })
             .write();
-        ctx.flash.msgfile = "Продукт сохранен!";
+        ctx.flash.set({ msgfile: "Продукт сохранен!", msgskill: null });
     } catch (err) {
-        ctx.flash.msgfile = err.message;
+        ctx.flash.set({ msgfile: err.message, msgskill: null });
     }
 
     return await ctx.redirect("/admin");

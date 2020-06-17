@@ -11,11 +11,11 @@ const pug = new Pug({
   noCache: true,
   app: app, // equals to pug.use(app) and app.use(pug.middleware)
 });
-const flash = require('koa-flash');
+const flash = require('koa-flash-simple');
 const errorHandler = require('./libs/error');
 const config = require('./config');
 const router = require('./routes');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 app.use(static('./public'));
 
